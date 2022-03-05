@@ -54,7 +54,7 @@ st.markdown('Este código está basado en el siguiente notebook: https://github.
 
 # Carga de datos
 st.subheader('Carga de datos')
-st.markdown('Las capas de límite cantonal y red vial se cargan del [repositorio en Github] (https://github.com/JosinMC/proyecto-streamlit/tree/main/data)')
+st.markdown('Las capas de límite cantonal y red vial se cargan del [repositorio en Github](https://github.com/JosinMC/proyecto-streamlit/tree/main/data)')
 
 # Definicion del geoide que se usara para calcular areas y longitudes
 geod = Geod(ellps="WGS84")
