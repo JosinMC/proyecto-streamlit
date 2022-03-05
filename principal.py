@@ -1,6 +1,6 @@
-# Aplicación desarrollada en Streamlit para visualización de datos de biodiversidad
-# Autor: Manuel Vargas (mfvargas@gmail.com)
-# Fecha de creación: 2021-02-13
+# Aplicación desarrollada en Streamlit para visualización de la red vial costarricense
+# Autor: Josin Madrigal Corrales - B43939
+# Fecha de creación: 2022-03-04
 
 
 import pandas as pd
@@ -56,7 +56,7 @@ st.markdown('Este código está basado en el siguiente notebook: https://github.
 
 # Carga de datos
 st.subheader('Carga de datos')
-st.markdown('Las capas de límite cantonal y red vial se cargan del [repositorio en Github] (https://github.com/JosinMC/proyecto-streamlit/data)')
+st.markdown('Las capas de límite cantonal y red vial se cargan del [repositorio en Github] (https://github.com/JosinMC/proyecto-streamlit/tree/main/data)')
 
 # Definicion del geoide que se usara para calcular areas y longitudes
 geod = Geod(ellps="WGS84")
@@ -104,7 +104,6 @@ por_categoria = cantones_vias.groupby(['canton','categoria'], as_index=False).ag
     area=('area', 'first'),
     longitud=('longitud', 'sum')
     )
-tabla = por_categoria.pivot(index='canton', columns='categoria', values='longitud').fillna('--')
 
 por_canton = cantones_vias.dissolve(
     by='canton',
@@ -114,7 +113,6 @@ por_canton = cantones_vias.dissolve(
         'longitud': 'sum'
         }
     )
-
 por_canton['densidad'] = por_canton['longitud'] / por_canton['area']
 
 
@@ -125,14 +123,16 @@ por_canton['densidad'] = por_canton['longitud'] / por_canton['area']
 
 # Tabla
 st.header('Tabla de vías tipo ' + filtro_categoria_str)
-tabla = pd.concat([tabla, por_canton[['longitud', 'densidad']]], join='inner', axis='columns')
+tabla = por_categoria.pivot(index='canton', columns='categoria', values='longitud').fillna('--')
+tabla = pd.concat([tabla, por_canton['densidad']], join='inner', axis='columns')
 # Opcion de pandas para permitir que se muestren mas filas en tablas html
 pd.set_option('display.max_rows', 90)
 tabla.reset_index(inplace=True)
-tabla.rename(columns={"canton": "cantón"})
+tabla.rename(columns={"canton": "cantón"}, inplace=True)
 tabla.columns = tabla.columns.str.title()
 
 st.dataframe(tabla.round(4))
+st.markdown('Se muestra la densidad y la longitud de la red vial en Km para la categoría seleccionada.')
 
 # Definición de columnas
 col1, col2 = st.columns(2)
@@ -152,7 +152,7 @@ with col1:
         title=f"Longitud de vías para los 15 cantones con mayor longitud de red vial"
         )
     st.plotly_chart(fig)
-    st.markdown('Se muestra la longitud por tipo de red vial para los 15 cantones con mayor longitud **total** de red vial')
+    st.markdown('Se muestra la longitud para los 15 cantones con mayor longitud de red vial según la categoría seleccionada.')
 
 with col2:
     # Grafico de pastel
